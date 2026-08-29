@@ -51,32 +51,25 @@
     <script>
         document.getElementById("summarization-form").addEventListener("submit", async (e) => {
 
-            // Stop the page from refreshing
             e.preventDefault();
 
-            // Get HTML elements
             const dialogueInput = document.getElementById("dialogue-input");
             const summaryText = document.getElementById("summary-text");
             const submitButton = e.target.querySelector("button");
 
-            // Get user-entered dialogue
             const dialogue = dialogueInput.value.trim();
 
-            // Don't send empty dialogue
             if (!dialogue) {
                 summaryText.innerText = "Please enter some content to summarize.";
                 return;
             }
 
-            // Show processing message
             summaryText.innerText = "Processing...";
 
-            // Disable button while model is working
             submitButton.disabled = true;
 
             try {
 
-                // Send dialogue to FastAPI
                 const response = await fetch("/summarize/", {
                     method: "POST",
 
@@ -84,31 +77,23 @@
                         "Content-Type": "application/json"
                     },
 
-                    // This matches your FastAPI DialogueInput class
                     body: JSON.stringify({
                         dialogue: dialogue
                     })
                 });
 
-
-                // Check if FastAPI returned an error
                 if (!response.ok) {
                     throw new Error(`Server error: ${response.status}`);
                 }
 
-
-                // Convert FastAPI response into JSON
                 const data = await response.json();
 
-
-                // Display generated summary
                 summaryText.innerText =
                     data.summary || "No summary returned.";
 
 
             } catch (err) {
 
-                // Display error
                 console.error(err);
 
                 summaryText.innerText =
@@ -117,7 +102,6 @@
 
             } finally {
 
-                // Enable button again
                 submitButton.disabled = false;
 
             }
