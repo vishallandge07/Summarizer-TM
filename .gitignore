@@ -1,0 +1,21 @@
+# Datasets 
+samsum-test.csv
+samsum-train.csv
+samsum-validation.csv
+
+#System files
+.vscode
+__pycache__
+
+#Saved Models
+/saved_summary_model/config.json
+/saved_summary_model/generation_config.json
+/saved_summary_model/model.safetensors
+/saved_summary_model/tokenizer.json
+/saved_summary_model/tokenizer_config.json
+
+# CSS
+/static
+
+# HTML
+/templates

@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarizer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Sora:wght@600;700;800&family=Inter:wght@400;500;600&display=swap"
+        rel="stylesheet">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Bitcount+Prop+Single:wght@100..900&family=Fraunces:ital,opsz,wght@0,9..144,100..900;1,9..144,100..900&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+
+<body>
+
+    <div class="backdrop" aria-hidden="true"></div>
+
+    <main class="container">
+
+        <span class="eyebrow">✦ AI-Powered</span>
+
+        <h1>Text Summarizer</h1>
+        <!-- <h3>using HuggingFace Transformer</h3> -->
+        <p class="hint">Type or <kbd>Ctrl</kbd>+<kbd>V</kbd> for quick summarization!</p>
+
+        <form id="summarization-form">
+            <div class="input-shell">
+                <textarea id="dialogue-input" placeholder="Enter your content here…"></textarea>
+                <button type="submit">
+                    Let's GO!
+                    <span class="spark" aria-hidden="true">✦</span>
+                </button>
+            </div>
+        </form>
+
+        <section class="summary-output" aria-live="polite">
+            <h3 id="summary-heading">Summarized</h3>
+            <p id="summary-text">Magic will rain here!</p>
+        </section>
+
+        <p class="footnote">Powered by Transformers</p>
+
+    </main>
+    <script>
+        document.getElementById("summarization-form").addEventListener("submit", async (e) => {
+
+            // Stop the page from refreshing
+            e.preventDefault();
+
+            // Get HTML elements
+            const dialogueInput = document.getElementById("dialogue-input");
+            const summaryText = document.getElementById("summary-text");
+            const submitButton = e.target.querySelector("button");
+
+            // Get user-entered dialogue
+            const dialogue = dialogueInput.value.trim();
+
+            // Don't send empty dialogue
+            if (!dialogue) {
+                summaryText.innerText = "Please enter some content to summarize.";
+                return;
+            }
+
+            // Show processing message
+            summaryText.innerText = "Processing...";
+
+            // Disable button while model is working
+            submitButton.disabled = true;
+
+            try {
+
+                // Send dialogue to FastAPI
+                const response = await fetch("/summarize/", {
+                    method: "POST",
+
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+
+                    // This matches your FastAPI DialogueInput class
+                    body: JSON.stringify({
+                        dialogue: dialogue
+                    })
+                });
+
+
+                // Check if FastAPI returned an error
+                if (!response.ok) {
+                    throw new Error(`Server error: ${response.status}`);
+                }
+
+
+                // Convert FastAPI response into JSON
+                const data = await response.json();
+
+
+                // Display generated summary
+                summaryText.innerText =
+                    data.summary || "No summary returned.";
+
+
+            } catch (err) {
+
+                // Display error
+                console.error(err);
+
+                summaryText.innerText =
+                    `Error: ${err.message}`;
+
+
+            } finally {
+
+                // Enable button again
+                submitButton.disabled = false;
+
+            }
+
+        });
+    </script>
+
+</body>
+
+</html>
