@@ -1,1 +1,4 @@
-# Text-Summarizer
+# Text-Summarizer 
+Transformer Minor Project (using HuggingFace & FastAPI)
+
+
